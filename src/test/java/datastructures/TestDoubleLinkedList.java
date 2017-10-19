@@ -1,3 +1,11 @@
+/**
+ * CSE 373
+ * Project 1 - Part 1
+ * ArrayDictionary class
+ * 
+ * Marcus Deichman and Kevin Tran
+ */
+
 package datastructures;
 
 import static org.junit.Assert.assertTrue;
@@ -313,8 +321,7 @@ public class TestDoubleLinkedList extends BaseTest {
         list2.insert(1, "b");
         this.assertListMatches(new String[] {"a", "b"}, list2);
     }
-
-    @Test(timeout=SECOND)
+    @Test
     public void testInsertOutOfBounds() {
         IList<String> list = this.makeBasicList();
 
@@ -457,12 +464,10 @@ public class TestDoubleLinkedList extends BaseTest {
         assertEquals(-1, list.indexOf(null));
         assertFalse(list.contains(null));
     }
-
     @Test(timeout=SECOND)
     public void testIteratorBasic() {
         IList<String> list = this.makeBasicList();
         Iterator<String> iter = list.iterator();
-
         // Get first element
         for (int i = 0; i < 5; i++) {
             assertTrue(iter.hasNext());
@@ -522,6 +527,70 @@ public class TestDoubleLinkedList extends BaseTest {
         for (int num : list) {
             assertEquals(count, num);
             count += 2;
+        }
+    }
+
+    @Test(timeout=SECOND)
+    public void testDeleteNonEdgeNodes() {
+    	IList<String> list = makeBasicList();
+    	list.add("d");
+    	list.add("e");
+    	this.assertListMatches(new String[]{"a", "b", "c", "d", "e"}, list);
+    	list.delete(1);
+    	this.assertListMatches(new String[]{"a", "c", "d", "e"}, list);
+    	list.delete(1);
+    	this.assertListMatches(new String[]{"a", "d", "e"}, list);
+    	list.delete(1);
+    	this.assertListMatches(new String[]{"a", "e"}, list);
+    }
+    @Test(timeout=SECOND)
+    public void testDeleteFrontNode() {
+    	IList<String> list = makeBasicList();
+    	this.assertListMatches(new String[]{"a", "b", "c"}, list);
+    	list.delete(0);
+    	this.assertListMatches(new String[]{"b", "c"}, list);
+    	list.delete(0);
+    	this.assertListMatches(new String[]{"c"}, list);
+    }
+
+    @Test(timeout=SECOND)
+    public void testDeleteBackNode() {
+    	IList<String> list = makeBasicList();
+    	for (int i = list.size() - 1; i > 0; i--) {
+    		list.delete(i);
+    	}
+    	this.assertListMatches(new String[]{"a"}, list);
+    }
+
+    @Test(timeout=SECOND)
+    public void testSizeUpdateOnDelete() {
+    	IList<String> list = makeBasicList();
+    	list.delete(1);
+    	assertEquals(2, list.size());
+    	list.delete(0);
+    	assertEquals(1, list.size());
+    	list.delete(0);
+    	assertEquals(0, list.size());
+    }
+    @Test(timeout=SECOND)
+    public void testDeleteOutOfBoundsThrowsException() {
+        IList<String> list = this.makeBasicList();
+        try {
+            list.delete(-1);
+            fail("Expected IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException ex) {
+            // Do nothing: this is ok
+        }
+
+        // This should be ok
+        list.delete(2);
+
+        try {
+            // Now we're out of bounds
+            list.delete(2);
+            fail("Expected IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException ex) {
+            // Do nothing: this is ok
         }
     }
 }
