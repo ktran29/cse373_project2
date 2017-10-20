@@ -75,7 +75,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
             	index = i - 1;
             	i = pairs.length;
             }
-        	else if (pairs[i].key == key || pairs[i].key.equals(key) ) {
+        	else if (pairs[i].key == key || pairs[i].key.equals(key)) {
                 foundKey = true;
                 index = i - 1;
                 i = pairs.length;

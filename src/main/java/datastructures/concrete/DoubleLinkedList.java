@@ -142,7 +142,7 @@ public class DoubleLinkedList<T> implements IList<T> {
 	        }
 	    } else if (index == size) {
 	        Node<T> newEntry = new Node<T>(back, item, null);
-	        if(back != null) {
+	        if (back != null) {
 	        	back.next = newEntry;
 	        }
 	        back = newEntry;
