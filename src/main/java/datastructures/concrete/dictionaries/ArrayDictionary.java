@@ -8,8 +8,13 @@
 
 package datastructures.concrete.dictionaries;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import datastructures.concrete.KVPair;
 import datastructures.interfaces.IDictionary;
 import misc.exceptions.NoSuchKeyException;
+import misc.exceptions.NotYetImplementedException;
 
 /**
  * See IDictionary for more details on what this class should do
@@ -18,7 +23,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     // You may not change or rename this field: we will be inspecting
     // it using our private tests.
     private Pair<K, V>[] pairs;
-
+    private IDictionary<K, V>[] arrayDict;
     // You're encouraged to add extra fields (and helper methods) though!
 
     public ArrayDictionary() {
@@ -146,6 +151,35 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
         return pairCount;
     }
 
+    public Iterator<KVPair<K, V>> iterator() {
+    	return new ArrayDictionaryIterator<>(this.arrayDict);
+    }
+    
+    private static class ArrayDictionaryIterator<K, V> implements Iterator<KVPair<K, V>> {
+    	
+    	private IDictionary<K, V>[] arrayDict;
+    	private int index;
+    	
+    	public ArrayDictionaryIterator(IDictionary<K, V>[] arrayDict) {
+    		this.arrayDict = arrayDict;
+    		this.index = 0;
+    	}
+    	
+    	@Override
+    	public boolean hasNext() {
+    		return arrayDict[index] != null;
+    	}
+    	
+    	@Override
+    	public KVPair<K, V> next() {
+    		if (!hasNext()) {
+                throw new NoSuchElementException();
+    		} else {
+    			throw new NotYetImplementedException();
+    		}
+    	}
+    }
+    
     private static class Pair<K, V> {
         public K key;
         public V value;
