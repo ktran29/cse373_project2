@@ -23,7 +23,6 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     // You may not change or rename this field: we will be inspecting
     // it using our private tests.
     private Pair<K, V>[] pairs;
-    private IDictionary<K, V>[] arrayDict;
     // You're encouraged to add extra fields (and helper methods) though!
 
     public ArrayDictionary() {
@@ -80,6 +79,13 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
             	index = i - 1;
             	i = pairs.length;
             }
+        	else if (pairs[i].key == null) {
+        		if (pairs[i].key == key) {
+        			foundKey = true;
+                    index = i - 1;
+                    i = pairs.length;
+        		}
+        	}
         	else if (pairs[i].key == key || pairs[i].key.equals(key)) {
                 foundKey = true;
                 index = i - 1;
@@ -152,22 +158,22 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     }
 
     public Iterator<KVPair<K, V>> iterator() {
-    	return new ArrayDictionaryIterator<>(this.arrayDict);
+    	return new ArrayDictionaryIterator<>(this.pairs);
     }
     
     private static class ArrayDictionaryIterator<K, V> implements Iterator<KVPair<K, V>> {
     	
-    	private IDictionary<K, V>[] arrayDict;
+    	private Pair<K, V>[] pairs;
     	private int index;
     	
-    	public ArrayDictionaryIterator(IDictionary<K, V>[] arrayDict) {
-    		this.arrayDict = arrayDict;
+    	public ArrayDictionaryIterator(Pair<K, V>[] pairs) {
+    		this.pairs = pairs;
     		this.index = 0;
     	}
     	
     	@Override
     	public boolean hasNext() {
-    		return arrayDict[index] != null;
+    		return pairs[index] != null;
     	}
     	
     	@Override
@@ -175,10 +181,10 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     		if (!hasNext()) {
                 throw new NoSuchElementException();
     		} else {
-//    			KVPair<K, V> nextElement = arrayDict[index];
-//    			index++;
-//    			return nextElement;
-    			throw new NotYetImplementedException();
+    			Pair<K, V> nextElement = pairs[index];
+    			KVPair<K, V> returnedElement = new KVPair<K, V>(nextElement.key, nextElement.value);
+    			index++;
+    			return returnedElement;
     		}
     	}
     }
