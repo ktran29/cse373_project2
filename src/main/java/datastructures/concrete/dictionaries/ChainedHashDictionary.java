@@ -15,11 +15,14 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
     // You may not change or rename this field: we will be inspecting
     // it using our private tests.
     private IDictionary<K, V>[] chains;
+    private boolean full;
+    private int updatingSize = 1;
 
     // You're encouraged to add extra fields (and helper methods) though!
 
     public ChainedHashDictionary() {
-        throw new NotYetImplementedException();
+        this.chains = makeArrayOfChains(updatingSize);
+        this.full = false;
     }
 
     /**
@@ -38,27 +41,65 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public V get(K key) {
-        throw new NotYetImplementedException();
+        for (int i = 0; i < chains.length; i++) {
+            if (chains[i] != null && (chains[i].get(key) == key)) {
+                return chains[i].get(key);
+            }
+        }
+        throw new NoSuchKeyException(); // Only gets here if no key found
     }
 
     @Override
     public void put(K key, V value) {
-        throw new NotYetImplementedException();
+        if (full) {
+            updatingSize *= 2;
+        }
+        if (containsKey(key)) {
+        		
+        } else {
+            for (int i = 0; i < chains.length; i++) {
+                if (i == chains.length) {
+                    full = true;
+                }
+                if (chains[i] == null) {
+                    chains[i] = new ArrayDictionary<K, V>();
+                    break;
+                }
+            }
+        }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public V remove(K key) {
-        throw new NotYetImplementedException();
+        if (containsKey(key)) {
+            int index = indexOf(key);
+            V value = (V) chains[index];
+            chains[index] = null;
+            return value;
+        }
+        return null;
     }
 
     @Override
     public boolean containsKey(K key) {
-        throw new NotYetImplementedException();
+        for (int i = 0; i < chains.length; i++) {
+            if (chains[i] != null && (chains[i].get(key) == key)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public int size() {
-        throw new NotYetImplementedException();
+        int count = 0;
+        for (int i = 0; i < chains.length; i++) {
+            if (chains[i] != null) {
+             	count++;
+            }
+        }
+        return count;
     }
 
     @Override
@@ -105,19 +146,36 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
      */
     private static class ChainedIterator<K, V> implements Iterator<KVPair<K, V>> {
         private IDictionary<K, V>[] chains;
+        private int index;
 
         public ChainedIterator(IDictionary<K, V>[] chains) {
             this.chains = chains;
+            this.index = 0;
         }
 
         @Override
         public boolean hasNext() {
-            throw new NotYetImplementedException();
+            return chains
         }
 
         @Override
         public KVPair<K, V> next() {
-            throw new NotYetImplementedException();
+            if (!hasNext()) {
+            	   throw new NoSuchElementException();
+            } else {
+            	   KVPair<K, V> returnValue = chains[index];
+            	   index++;
+            	   return returnValue;
+            }
         }
+    }
+    
+    private int indexOf(K key) {
+        for (int i = 0; i < chains.length; i++) {
+            if (key.equals(chains[i])) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
