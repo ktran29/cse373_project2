@@ -175,6 +175,9 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     		if (!hasNext()) {
                 throw new NoSuchElementException();
     		} else {
+//    			KVPair<K, V> nextElement = arrayDict[index];
+//    			index++;
+//    			return nextElement;
     			throw new NotYetImplementedException();
     		}
     	}
