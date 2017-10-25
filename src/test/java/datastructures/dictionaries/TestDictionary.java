@@ -23,6 +23,7 @@ public abstract class TestDictionary extends BaseTest {
         dict.put("keyA", "valA");
         dict.put("keyB", "valB");
         dict.put("keyC", "valC");
+
         return dict;
     }
 
@@ -224,7 +225,7 @@ public abstract class TestDictionary extends BaseTest {
     }
 
 
-    @Test(timeout=5 * SECOND)
+    @Test(timeout=20 * SECOND)
     public void testAddGetMany() {
         int cap = 15000;
         IDictionary<Integer, Integer> dict = this.newDictionary();
@@ -234,10 +235,12 @@ public abstract class TestDictionary extends BaseTest {
                 dict.put(i, i * 2);
             }
 
+            
             for (int i = 0; i < cap; i++) {
                 int value = dict.get(i);
                 assertEquals(i * 2, value);
             }
+            
         }
     }
 

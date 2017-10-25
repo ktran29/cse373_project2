@@ -75,18 +75,16 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
         int index = 0;
         boolean foundKey = false;
         for (int i = 0; i < pairs.length; i++) {
-        	if (pairs[i] == null) {
-            	index = i - 1;
-            	i = pairs.length;
-            }
-        	else if (pairs[i].key == null) {
-        		if (pairs[i].key == key) {
-        			foundKey = true;
+            if (pairs[i] == null) {
+                index = i - 1;
+                i = pairs.length;
+            } else if (pairs[i].key == null) {
+                if (pairs[i].key == key) {
+                    foundKey = true;
                     index = i - 1;
                     i = pairs.length;
-        		}
-        	}
-        	else if (pairs[i].key == key || pairs[i].key.equals(key)) {
+                }
+            } else if (pairs[i].key == key || pairs[i].key.equals(key)) {
                 foundKey = true;
                 index = i - 1;
                 i = pairs.length;
@@ -96,14 +94,14 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
         if (foundKey) {
             pairs[index].value = value;
         } else if (index >= pairs.length) {
-        	Pair<K, V>[] newPairs = makeArrayOfPairs(pairs.length * 2);
-        	for (int i = 0; i < pairs.length; i++) {
-        		newPairs[i] = pairs[i];
-        	}
-        	pairs = newPairs;
-        	pairs[index] = new Pair<K, V>(key, value);
+            Pair<K, V>[] newPairs = makeArrayOfPairs(pairs.length * 2);
+            for (int i = 0; i < pairs.length; i++) {
+                newPairs[i] = pairs[i];
+            }
+            pairs = newPairs;
+            pairs[index] = new Pair<K, V>(key, value);
         } else {
-        	pairs[index] = new Pair<K, V>(key, value);
+            pairs[index] = new Pair<K, V>(key, value);
         }
     }
 
@@ -119,7 +117,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
                 V removedValue = pairs[i].value;
                 pairs[i] = null;
                 for (int j = i; j < pairs.length - 1; j++) {
-                	pairs[j] = pairs[j + 1];
+                    pairs[j] = pairs[j + 1];
                 }
                 pairs[pairs.length - 1] = null;
                 return removedValue;
@@ -148,11 +146,11 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     public int size() {
     	int pairCount = 0;
     	for (int i = 0; i < pairs.length; i++) {
-    		if (pairs[i] != null) {
-    			pairCount++;
-    		} else {
-    			i = pairs.length;
-    		}
+            if (pairs[i] != null) {
+                pairCount++;
+            } else {
+                i = pairs.length;
+            }
     	}
         return pairCount;
     }
@@ -163,30 +161,30 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     
     private static class ArrayDictionaryIterator<K, V> implements Iterator<KVPair<K, V>> {
     	
-    	private Pair<K, V>[] pairs;
-    	private int index;
+        private Pair<K, V>[] pairs;
+        private int index;
     	
-    	public ArrayDictionaryIterator(Pair<K, V>[] pairs) {
-    		this.pairs = pairs;
-    		this.index = 0;
-    	}
+      	public ArrayDictionaryIterator(Pair<K, V>[] pairs) {
+            this.pairs = pairs;
+            this.index = 0;
+        }
     	
-    	@Override
-    	public boolean hasNext() {
-    		return pairs[index] != null;
-    	}
+      	@Override
+      	public boolean hasNext() {
+            return pairs[index] != null;
+      	}
     	
-    	@Override
-    	public KVPair<K, V> next() {
-    		if (!hasNext()) {
+      	@Override
+      	public KVPair<K, V> next() {
+            if (!hasNext()) {
                 throw new NoSuchElementException();
-    		} else {
-    			Pair<K, V> nextElement = pairs[index];
-    			KVPair<K, V> returnedElement = new KVPair<K, V>(nextElement.key, nextElement.value);
-    			index++;
-    			return returnedElement;
-    		}
-    	}
+            } else {
+                Pair<K, V> nextElement = pairs[index];
+                KVPair<K, V> returnedElement = new KVPair<K, V>(nextElement.key, nextElement.value);
+                index++;
+                return returnedElement;
+            }
+      	}
     }
     
     private static class Pair<K, V> {

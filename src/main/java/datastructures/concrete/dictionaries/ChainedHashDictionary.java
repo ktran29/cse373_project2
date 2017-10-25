@@ -3,7 +3,7 @@ package datastructures.concrete.dictionaries;
 import datastructures.concrete.KVPair;
 import datastructures.interfaces.IDictionary;
 import misc.exceptions.NoSuchKeyException;
-import misc.exceptions.NotYetImplementedException;
+//import misc.exceptions.NotYetImplementedException;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -41,9 +41,9 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public V get(K key) {
-        for (int i = 0; i < chains.length; i++) {
-            if (chains[i] != null && (chains[i].get(key) == key)) {
-                return chains[i].get(key);
+        for (IDictionary<K, V> item : chains) {
+            if (item != null && item.containsKey(key)) {
+                return item.get(key);
             }
         }
         throw new NoSuchKeyException(); // Only gets here if no key found
@@ -53,38 +53,46 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
     public void put(K key, V value) {
         if (full) {
             updatingSize *= 2;
+            IDictionary<K, V>[] newChains = makeArrayOfChains(updatingSize);
+            for (int i = 0; i < chains.length; i++) {
+                newChains[i] = chains[i];
+            }
+            this.chains = newChains;
+            full = false;
         }
         if (containsKey(key)) {
-        		
+            int index = indexOf(key);
+            chains[index].put(key, value);
         } else {
             for (int i = 0; i < chains.length; i++) {
-                if (i == chains.length) {
+                if (i == chains.length - 1) {
                     full = true;
                 }
                 if (chains[i] == null) {
                     chains[i] = new ArrayDictionary<K, V>();
+                    chains[i].put(key, value);
                     break;
                 }
             }
         }
     }
 
-    @SuppressWarnings("unchecked")
+
     @Override
     public V remove(K key) {
         if (containsKey(key)) {
             int index = indexOf(key);
-            V value = (V) chains[index];
+            V value = chains[index].get(key);
             chains[index] = null;
             return value;
         }
-        return null;
+        throw new NoSuchKeyException();
     }
 
     @Override
     public boolean containsKey(K key) {
-        for (int i = 0; i < chains.length; i++) {
-            if (chains[i] != null && (chains[i].get(key) == key)) {
+        for (IDictionary<K, V> item : chains) {
+            if (item != null && item.containsKey(key)) {
                 return true;
             }
         }
@@ -94,9 +102,9 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
     @Override
     public int size() {
         int count = 0;
-        for (int i = 0; i < chains.length; i++) {
-            if (chains[i] != null) {
-             	count++;
+        for (IDictionary<K, V> item : chains) {
+            if (item != null) {
+                count++;
             }
         }
         return count;
@@ -155,24 +163,25 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
         @Override
         public boolean hasNext() {
-            return chains
+            return chains[index] != null;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public KVPair<K, V> next() {
             if (!hasNext()) {
-            	   throw new NoSuchElementException();
+                throw new NoSuchElementException();
             } else {
-            	   KVPair<K, V> returnValue = chains[index];
-            	   index++;
-            	   return returnValue;
+                IDictionary<K, V> returnValue = chains[index];
+                index++;
+                return (KVPair<K, V>) returnValue;
             }
         }
     }
     
     private int indexOf(K key) {
         for (int i = 0; i < chains.length; i++) {
-            if (key.equals(chains[i])) {
+            if (chains[i] != null && chains[i].containsKey(key)) {
                 return i;
             }
         }
