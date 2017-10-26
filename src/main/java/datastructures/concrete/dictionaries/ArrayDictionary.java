@@ -26,7 +26,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     // You're encouraged to add extra fields (and helper methods) though!
 
     public ArrayDictionary() {
-    	this.pairs = makeArrayOfPairs(4);
+        this.pairs = makeArrayOfPairs(4);
     }
 
     /**

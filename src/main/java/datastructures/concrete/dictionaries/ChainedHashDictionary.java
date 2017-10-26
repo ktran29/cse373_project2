@@ -16,7 +16,8 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
     // it using our private tests.
     private IDictionary<K, V>[] chains;
     private boolean full;
-    private int updatingSize = 1;
+    private int updatingSize = 13;
+    private int actualSize = 0;
 
     // You're encouraged to add extra fields (and helper methods) though!
 
@@ -41,16 +42,15 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public V get(K key) {
-        for (IDictionary<K, V> item : chains) {
-            if (item != null && item.containsKey(key)) {
-                return item.get(key);
-            }
+        if (containsKey(key)) {
+            return chains[Math.abs(key.hashCode()) % updatingSize].get(key);	
         }
         throw new NoSuchKeyException(); // Only gets here if no key found
     }
 
     @Override
     public void put(K key, V value) {
+        int index = Math.abs(key.hashCode()) % updatingSize;
         if (full) {
             updatingSize *= 2;
             IDictionary<K, V>[] newChains = makeArrayOfChains(updatingSize);
@@ -61,19 +61,14 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
             full = false;
         }
         if (containsKey(key)) {
-            int index = indexOf(key);
             chains[index].put(key, value);
         } else {
-            for (int i = 0; i < chains.length; i++) {
-                if (i == chains.length - 1) {
-                    full = true;
-                }
-                if (chains[i] == null) {
-                    chains[i] = new ArrayDictionary<K, V>();
-                    chains[i].put(key, value);
-                    break;
-                }
+            if (chains[index] == null) {
+                chains[index] = new ArrayDictionary<K, V>();
             }
+            chains[index].put(key, value);
+            actualSize++;
+            full = actualSize == updatingSize - 1;
         }
     }
 
@@ -81,9 +76,10 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
     @Override
     public V remove(K key) {
         if (containsKey(key)) {
-            int index = indexOf(key);
+            int index = Math.abs(key.hashCode()) % updatingSize;
             V value = chains[index].get(key);
             chains[index] = null;
+            actualSize--;
             return value;
         }
         throw new NoSuchKeyException();
@@ -91,23 +87,13 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public boolean containsKey(K key) {
-        for (IDictionary<K, V> item : chains) {
-            if (item != null && item.containsKey(key)) {
-                return true;
-            }
-        }
-        return false;
+        int index = Math.abs(key.hashCode()) % updatingSize;
+        return index > -1 && chains[index] != null && chains[index].containsKey(key);
     }
 
     @Override
     public int size() {
-        int count = 0;
-        for (IDictionary<K, V> item : chains) {
-            if (item != null) {
-                count++;
-            }
-        }
-        return count;
+        return actualSize;
     }
 
     @Override
@@ -152,39 +138,34 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
      * 2. You **MAY** call the `.iterator()` method on each IDictionary
      *    instance inside your 'chains' array, however.
      */
-    private static class ChainedIterator<K, V> implements Iterator<KVPair<K, V>> {
+    private class ChainedIterator<K, V> implements Iterator<KVPair<K, V>> {
         private IDictionary<K, V>[] chains;
         private int index;
-
-        public ChainedIterator(IDictionary<K, V>[] chains) {
+        
+        public ChainedIterator(final IDictionary<K, V>[] chains) {
             this.chains = chains;
             this.index = 0;
         }
 
         @Override
         public boolean hasNext() {
-            return chains[index] != null;
+            return index < actualSize;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public KVPair<K, V> next() {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             } else {
-                IDictionary<K, V> returnValue = chains[index];
-                index++;
-                return (KVPair<K, V>) returnValue;
+                if (chains[index] != null) {
+                    Iterator<KVPair<K, V>> iter = chains[index].iterator();
+                    KVPair<K, V> returnValue = iter.next();
+                    index++;
+                    return returnValue;
+                }
+                return null;
             }
         }
     }
     
-    private int indexOf(K key) {
-        for (int i = 0; i < chains.length; i++) {
-            if (chains[i] != null && chains[i].containsKey(key)) {
-                return i;
-            }
-        }
-        return -1;
-    }
 }

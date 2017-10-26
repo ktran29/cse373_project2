@@ -22,7 +22,6 @@ public class TestChainedHashDictionary extends TestDictionary {
         for (int i = 999; i >= 0; i--) {
             String key = "" + i;
             assertEquals(i, map.get(new Wrapper<>(key, 0)));
-
             assertFalse(map.containsKey(new Wrapper<>(key + "a", 0)));
         }
 
@@ -63,31 +62,29 @@ public class TestChainedHashDictionary extends TestDictionary {
         assertFalse(dict.containsKey(key1));
     }
 
-//    @Test(timeout=20* SECOND)
-//    public void stressTest() {
-//        int limit = 1000000;
-//        IDictionary<Integer, Integer> dict = this.newDictionary();
-//
-//        for (int i = 0; i < limit; i++) {
-//            dict.put(i, i);
-//            assertEquals(i, dict.get(i));
-//        }
-//        
-//        for (int i = 0; i < limit; i++) {
-//            assertFalse(dict.containsKey(-1));
-//        }
-//
-//        System.out.println(2);
-//        
-//        for (int i = 0; i < limit; i++) {
-//            dict.put(i, -i);
-//        }
-//
-//        System.out.println(3);
-//        
-//        for (int i = 0; i < limit; i++) {
-//            assertEquals(-i, dict.get(i));
-//            dict.remove(i);
-//        }
-//    }
+    @Test(timeout=20* SECOND)
+    public void stressTest() {
+        int limit = 1000000;
+        IDictionary<Integer, Integer> dict = this.newDictionary();
+
+        for (int i = 0; i < limit; i++) {
+            dict.put(i, i);
+            assertEquals(i, dict.get(i));
+        }
+        
+        for (int i = 0; i < limit; i++) {
+            assertFalse(dict.containsKey(-1));
+        }
+
+        
+        for (int i = 0; i < limit; i++) {
+            dict.put(i, -i);
+        }
+
+        
+        for (int i = 0; i < limit; i++) {
+            assertEquals(-i, dict.get(i));
+            dict.remove(i);
+        }
+    }
 }

@@ -225,7 +225,7 @@ public abstract class TestDictionary extends BaseTest {
     }
 
 
-    @Test(timeout=20 * SECOND)
+    @Test(timeout=5 * SECOND)
     public void testAddGetMany() {
         int cap = 15000;
         IDictionary<Integer, Integer> dict = this.newDictionary();
@@ -235,7 +235,6 @@ public abstract class TestDictionary extends BaseTest {
                 dict.put(i, i * 2);
             }
 
-            
             for (int i = 0; i < cap; i++) {
                 int value = dict.get(i);
                 assertEquals(i * 2, value);
@@ -243,7 +242,6 @@ public abstract class TestDictionary extends BaseTest {
             
         }
     }
-
     @Test(timeout=SECOND)
     public void testContainsKeyBasic() {
         IDictionary<String, Integer> dict = this.newDictionary();
@@ -330,7 +328,7 @@ public abstract class TestDictionary extends BaseTest {
         }
     }
 
-    @Test(timeout=SECOND)
+    @Test//(timeout=SECOND)
     public void testIterator() {
         IDictionary<String, Integer> dict = this.newDictionary();
         IDictionary<String, Integer> copy = this.newDictionary();
@@ -343,7 +341,6 @@ public abstract class TestDictionary extends BaseTest {
             String key = pair.getKey();
             int actualValue = pair.getValue();
             int expectedValue = copy.get(key);
-
             assertEquals(expectedValue, actualValue);
             copy.remove(key);
         }
