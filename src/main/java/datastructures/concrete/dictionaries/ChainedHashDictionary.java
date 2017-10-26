@@ -164,7 +164,16 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
         @Override
         public boolean hasNext() {
-            return index < chains.length;
+            if (index < chains.length) {
+                if (chains[index] != null) {
+                    return true;
+                } else {
+                    index++;
+                    return
+                    		hasNext();
+                }
+            } 
+            return false;
         }
 
         @Override
@@ -172,15 +181,10 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             } else {
-                if (chains[index] != null) {
-                    Iterator<KVPair<K, V>> iter = chains[index].iterator();
-                    KVPair<K, V> returnValue = iter.next();
-                    index++;
-                    return returnValue;
-                } else {
-                    index++;
-                    return next();
-                }
+                Iterator<KVPair<K, V>> iter = chains[index].iterator();
+                KVPair<K, V> returnValue = iter.next();
+                index++;
+                return returnValue;
             }
         }
     }

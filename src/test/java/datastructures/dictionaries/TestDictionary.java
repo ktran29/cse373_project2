@@ -375,7 +375,7 @@ public abstract class TestDictionary extends BaseTest {
         assertTrue(metEmptyKey);
     }
 
-    @Test(timeout=SECOND)
+    @Test//(timeout=SECOND)
     public void testIteratorEndsCorrectly() {
         IDictionary<String, String> dict = this.makeBasicDictionary();
 
