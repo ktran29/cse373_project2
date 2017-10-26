@@ -16,7 +16,7 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
     // it using our private tests.
     private IDictionary<K, V>[] chains;
     private boolean full;
-    private int updatingSize = 13;
+    private int updatingSize = 12;
     private int actualSize = 0;
 
     // You're encouraged to add extra fields (and helper methods) though!
