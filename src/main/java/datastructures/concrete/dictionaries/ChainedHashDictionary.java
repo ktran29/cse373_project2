@@ -55,19 +55,19 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
             updatingSize *= 2;
             IDictionary<K, V>[] newChains = makeArrayOfChains(updatingSize);
             for (IDictionary<K, V> item : chains) {
-            		if (item != null) {
-            			Iterator<KVPair<K, V>> iter = item.iterator();
-                     while (iter.hasNext()) {
-                        	 KVPair<K, V> newItem = iter.next();
-                        	 K newKey = newItem.getKey();
-                        	 V newVal = newItem.getValue();
-                        	 int newIndex = Math.abs(newKey.hashCode()) % updatingSize;
-                        	 if (newChains[newIndex] == null) {
-                        		 newChains[newIndex] = new ArrayDictionary<K, V>();
-                        	 }
-                        	 newChains[newIndex].put(newKey, newVal);
-                     }
-            		}
+                if (item != null) {
+                    Iterator<KVPair<K, V>> iter = item.iterator();
+                    while (iter.hasNext()) {
+                        KVPair<K, V> newItem = iter.next();
+                        K newKey = newItem.getKey();
+                        V newVal = newItem.getValue();
+                        int newIndex = Math.abs(newKey.hashCode()) % updatingSize;
+                        if (newChains[newIndex] == null) {
+                            newChains[newIndex] = new ArrayDictionary<K, V>();
+                        }
+                        newChains[newIndex].put(newKey, newVal);
+                    }
+                }
             }
             this.chains = newChains;
             full = false;

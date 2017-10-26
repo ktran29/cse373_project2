@@ -171,7 +171,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     	
       	@Override
       	public boolean hasNext() {
-            return pairs[index] != null;
+            return index != pairs.length && pairs[index] != null;
       	}
     	
       	@Override
