@@ -90,7 +90,10 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
         if (containsKey(key)) {
             int index = Math.abs(key.hashCode()) % updatingSize;
             V value = chains[index].get(key);
-            chains[index] = null;
+            chains[index].remove(key);
+            if (chains[index].isEmpty()) {
+                chains[index] = null;
+            }
             actualSize--;
             return value;
         }
@@ -150,7 +153,7 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
      * 2. You **MAY** call the `.iterator()` method on each IDictionary
      *    instance inside your 'chains' array, however.
      */
-    private class ChainedIterator<K, V> implements Iterator<KVPair<K, V>> {
+    private static class ChainedIterator<K, V> implements Iterator<KVPair<K, V>> {
         private IDictionary<K, V>[] chains;
         private int index;
         
@@ -161,7 +164,7 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
         @Override
         public boolean hasNext() {
-            return index < actualSize;
+            return index < chains.length;
         }
 
         @Override
@@ -176,9 +179,8 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
                     return returnValue;
                 } else {
                     index++;
-                    next();
+                    return next();
                 }
-                return null;
             }
         }
     }
