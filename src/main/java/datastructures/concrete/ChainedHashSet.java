@@ -27,7 +27,9 @@ public class ChainedHashSet<T> implements ISet<T> {
      */
     @Override
     public void add(T item) {
-        map.put(item, true);
+        if (!contains(item)) {
+            map.put(item, true);
+        }
     }
 
     /**
@@ -37,7 +39,11 @@ public class ChainedHashSet<T> implements ISet<T> {
      */   
     @Override
     public void remove(T item) {
-        map.remove(item);
+        if (contains(item)) {
+            map.remove(item);	
+        } else {
+            throw new NoSuchElementException();
+        }
     }
    
     /**
@@ -74,12 +80,16 @@ public class ChainedHashSet<T> implements ISet<T> {
 
         @Override
         public boolean hasNext() {
-            
+            return iter.hasNext();
         }
 
         @Override
         public T next() {
-            
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            } else {
+                return iter.next().getKey();
+            }
         }
     }
 }

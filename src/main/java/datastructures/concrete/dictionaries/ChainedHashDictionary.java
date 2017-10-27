@@ -42,7 +42,9 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public V get(K key) {
-        if (containsKey(key)) {
+        if (key == null) {
+            return chains[updatingSize - 1].get(key);
+        } else if (containsKey(key)) {
             return chains[Math.abs(key.hashCode()) % updatingSize].get(key);	
         }
         throw new NoSuchKeyException(); // Only gets here if no key found
@@ -50,44 +52,57 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public void put(K key, V value) {
-        int index = Math.abs(key.hashCode()) % updatingSize;
-        if (full) {
-            updatingSize *= 2;
-            IDictionary<K, V>[] newChains = makeArrayOfChains(updatingSize);
-            for (IDictionary<K, V> item : chains) {
-                if (item != null) {
-                    Iterator<KVPair<K, V>> iter = item.iterator();
-                    while (iter.hasNext()) {
-                        KVPair<K, V> newItem = iter.next();
-                        K newKey = newItem.getKey();
-                        V newVal = newItem.getValue();
-                        int newIndex = Math.abs(newKey.hashCode()) % updatingSize;
-                        if (newChains[newIndex] == null) {
-                            newChains[newIndex] = new ArrayDictionary<K, V>();
+        if (key != null) {
+            int index = Math.abs(key.hashCode()) % updatingSize;
+            if (full) {
+                updatingSize *= 2;
+                IDictionary<K, V>[] newChains = makeArrayOfChains(updatingSize);
+                for (IDictionary<K, V> item : chains) {
+                    if (item != null) {
+                        Iterator<KVPair<K, V>> iter = item.iterator();
+                        while (iter.hasNext()) {
+                            KVPair<K, V> newItem = iter.next();
+                            K newKey = newItem.getKey();
+                            V newVal = newItem.getValue();
+                            int newIndex = Math.abs(newKey.hashCode()) % updatingSize;
+                            if (newChains[newIndex] == null) {
+                                newChains[newIndex] = new ArrayDictionary<K, V>();
+                            }
+                            newChains[newIndex].put(newKey, newVal);
                         }
-                        newChains[newIndex].put(newKey, newVal);
                     }
                 }
+                this.chains = newChains;
+                full = false;
             }
-            this.chains = newChains;
-            full = false;
-        }
-        if (containsKey(key)) {
-            chains[index].put(key, value);
+            if (containsKey(key)) {
+                chains[index].put(key, value);
+            } else {
+                if (chains[index] == null) {
+                    chains[index] = new ArrayDictionary<K, V>();
+                }
+                chains[index].put(key, value);
+                actualSize++;
+                full = actualSize == updatingSize - 1;
+            }
         } else {
-            if (chains[index] == null) {
-                chains[index] = new ArrayDictionary<K, V>();
+            if (chains[updatingSize - 1] == null) {
+                chains[updatingSize - 1] = new ArrayDictionary<K, V>();
+                actualSize++;
             }
-            chains[index].put(key, value);
-            actualSize++;
-            full = actualSize == updatingSize - 1;
+            chains[updatingSize - 1].put(key, value);
         }
     }
 
 
     @Override
     public V remove(K key) {
-        if (containsKey(key)) {
+        if (key == null) {
+            V value = chains[updatingSize - 1].get(key);
+            chains[updatingSize - 1].remove(key);
+            actualSize--;
+            return value;
+        } else if (containsKey(key)) {
             int index = Math.abs(key.hashCode()) % updatingSize;
             V value = chains[index].get(key);
             chains[index].remove(key);
@@ -102,8 +117,16 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public boolean containsKey(K key) {
-        int index = Math.abs(key.hashCode()) % updatingSize;
-        return index > -1 && chains[index] != null && chains[index].containsKey(key);
+        if (key != null) {
+            int index = Math.abs(key.hashCode()) % updatingSize;
+            return index > -1 && chains[index] != null && chains[index].containsKey(key);
+        } else {
+            if (chains[updatingSize - 1] != null) {
+                return chains[updatingSize - 1].containsKey(key);
+            } else {
+                return false;
+            }
+        }
     }
 
     @Override

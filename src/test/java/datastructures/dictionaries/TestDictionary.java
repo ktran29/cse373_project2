@@ -344,6 +344,8 @@ public abstract class TestDictionary extends BaseTest {
             copy.remove(key);
         }
 
+        assertTrue(copy.isEmpty());
+        
     }
 
     @Test(timeout=SECOND)
