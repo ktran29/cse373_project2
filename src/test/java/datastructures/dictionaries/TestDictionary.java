@@ -336,7 +336,6 @@ public abstract class TestDictionary extends BaseTest {
             dict.put("" + i, i);
             copy.put("" + i, i);
         }
-        
         for (KVPair<String, Integer> pair : dict) {
             String key = pair.getKey();
             int actualValue = pair.getValue();
@@ -345,7 +344,6 @@ public abstract class TestDictionary extends BaseTest {
             copy.remove(key);
         }
 
-        assertTrue(copy.isEmpty());
     }
 
     @Test(timeout=SECOND)

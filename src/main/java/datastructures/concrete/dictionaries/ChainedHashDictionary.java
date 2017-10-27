@@ -16,7 +16,7 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
     // it using our private tests.
     private IDictionary<K, V>[] chains;
     private boolean full;
-    private int updatingSize = 12;
+    private int updatingSize = 13;
     private int actualSize = 0;
 
     // You're encouraged to add extra fields (and helper methods) though!
@@ -153,7 +153,7 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
      * 2. You **MAY** call the `.iterator()` method on each IDictionary
      *    instance inside your 'chains' array, however.
      */
-    private static class ChainedIterator<K, V> implements Iterator<KVPair<K, V>> {
+    private class ChainedIterator<K, V> implements Iterator<KVPair<K, V>> {
         private IDictionary<K, V>[] chains;
         private int index;
         
@@ -169,8 +169,7 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
                     return true;
                 } else {
                     index++;
-                    return
-                    		hasNext();
+                    return hasNext();
                 }
             } 
             return false;
