@@ -105,11 +105,9 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
         } else if (containsKey(key)) {
             int index = Math.abs(key.hashCode()) % updatingSize;
             V value = chains[index].get(key);
-            chains[index].remove(key);
-            if (chains[index].isEmpty()) {
-                chains[index] = null;
-            }
-            actualSize--;
+            int hashSize = chains[index].size();
+            chains[index] = null;
+            actualSize -= hashSize;
             return value;
         }
         throw new NoSuchKeyException();
