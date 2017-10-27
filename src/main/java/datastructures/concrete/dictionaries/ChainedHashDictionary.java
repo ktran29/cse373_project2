@@ -64,11 +64,15 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
                             KVPair<K, V> newItem = iter.next();
                             K newKey = newItem.getKey();
                             V newVal = newItem.getValue();
-                            int newIndex = Math.abs(newKey.hashCode()) % updatingSize;
-                            if (newChains[newIndex] == null) {
-                                newChains[newIndex] = new ArrayDictionary<K, V>();
+                            if (newKey != null) {
+                                int newIndex = Math.abs(newKey.hashCode()) % updatingSize;
+                                if (newChains[newIndex] == null) {
+                                    newChains[newIndex] = new ArrayDictionary<K, V>();
+                                }
+                                newChains[newIndex].put(newKey, newVal);
+                            } else {
+                                newChains[updatingSize - 1].put(newKey, newVal);
                             }
-                            newChains[newIndex].put(newKey, newVal);
                         }
                     }
                 }
